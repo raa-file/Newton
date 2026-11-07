@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>قوانين نيوتن في الحركة | فيزياء ١</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F6F4EF;--ink:#1B2340;--muted:#676D86;--line:#E3DFD5;--card:#FFFFFF;
+  --force:#EC5F33;--motion:#2B67E5;--ok:#13A07C;--gold:#E39A12;--bad:#D6384B;
+  --soft-f:#FDE8DF;--soft-m:#E2EBFD;--soft-o:#DCF3EB;--soft-g:#FCF0D6;
+  --hfont:'Readex Pro','IBM Plex Sans Arabic',Tahoma,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#10142A;overflow:hidden;font-family:'IBM Plex Sans Arabic',Tahoma,sans-serif;color:var(--ink)}
+button{font-family:inherit;cursor:pointer}
+.stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;transform-origin:center center;background:var(--bg);overflow:hidden;
+  background-image:linear-gradient(rgba(27,35,64,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(27,35,64,.035) 1px,transparent 1px);background-size:48px 48px}
+.ic{fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;width:48px;height:48px;flex:none}
+svg text{font-family:'IBM Plex Sans Arabic',Tahoma,Arial,sans-serif;unicode-bidi:plaintext}
+bdi.eq,.eq{font-family:'IBM Plex Sans Arabic',sans-serif;direction:ltr;unicode-bidi:isolate;font-weight:700;letter-spacing:.5px}
+
+/* slides */
+.slide{position:absolute;inset:0;padding:80px 120px 140px;opacity:0;visibility:hidden;transform:translateX(-36px);transition:opacity .5s ease,transform .5s ease,visibility .5s}
+.slide.active{opacity:1;visibility:visible;transform:none}
+.kicker{display:inline-flex;align-items:center;gap:12px;font-weight:700;font-size:26px;padding:10px 22px 10px 26px;border-radius:999px;background:var(--soft-m);color:var(--motion)}
+.kicker .ic{width:34px;height:34px}
+.kicker.f{background:var(--soft-f);color:var(--force)}.kicker.o{background:var(--soft-o);color:var(--ok)}.kicker.g{background:var(--soft-g);color:#B07405}
+h1,h2,h3{font-family:var(--hfont);margin:0;font-weight:700}
+h2{font-size:64px;margin:22px 0 10px;line-height:1.2}
+.lead{font-size:30px;color:var(--muted);margin:0;line-height:1.6}
+.card{background:var(--card);border:2px solid var(--line);border-radius:28px}
+.row{display:flex;gap:36px}
+.law{font-size:30px;line-height:1.7;background:var(--card);border-right:10px solid var(--motion);border-radius:22px;padding:24px 32px;margin:0}
+.law b{color:var(--motion)}
+.btn{border:0;border-radius:18px;padding:16px 30px;font-size:26px;font-weight:700;background:var(--ink);color:#fff;display:inline-flex;align-items:center;gap:10px;transition:transform .15s,box-shadow .15s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(27,35,64,.18)}
+.btn.f{background:var(--force)}.btn.m{background:var(--motion)}.btn.o{background:var(--ok)}
+.btn.ghost{background:transparent;color:var(--ink);border:2px solid var(--line)}
+.btn .ic{width:30px;height:30px}
+.read{display:flex;gap:18px;flex-wrap:wrap}
+.read div{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:12px 22px;min-width:170px}
+.read small{display:block;font-size:20px;color:var(--muted)}
+.read span{font-size:34px;font-weight:700;font-family:var(--hfont)}
+.ctrl{font-size:24px;font-weight:600;margin-bottom:18px}
+.ctrl label{display:flex;justify-content:space-between;margin-bottom:8px}
+.ctrl label bdi{color:var(--motion)}
+input[type=range]{width:100%;accent-color:var(--motion);height:30px}
+.scene{background:var(--card);border:2px solid var(--line);border-radius:28px;display:block}
+.inq{display:flex;gap:14px;align-items:flex-start;background:var(--soft-g);border-radius:20px;padding:18px 24px;font-size:24px;line-height:1.6}
+.inq .ic{width:38px;height:38px;color:#B07405}
+
+/* toolbar */
+.bar{position:absolute;left:0;right:0;bottom:0;height:96px;display:flex;align-items:center;justify-content:space-between;padding:0 60px;z-index:20}
+.bar .brand{font-size:22px;color:var(--muted);font-weight:600;display:flex;align-items:center;gap:12px}
+.bar .brand .ic{width:32px;height:32px;color:var(--force)}
+.nav{display:flex;align-items:center;gap:14px}
+.nav button{width:62px;height:62px;border-radius:50%;border:2px solid var(--line);background:var(--card);color:var(--ink);display:grid;place-items:center}
+.nav button:hover{border-color:var(--ink)}
+.nav button .ic{width:30px;height:30px}
+.count{font-family:var(--hfont);font-size:26px;font-weight:700;min-width:96px;text-align:center}
+.progress{position:absolute;bottom:0;right:0;height:8px;background:var(--force);transition:width .5s;z-index:21}
+.timer-pop{position:absolute;bottom:110px;left:60px;background:var(--card);border:2px solid var(--line);border-radius:22px;padding:18px;display:none;gap:10px;z-index:30;box-shadow:0 14px 40px rgba(0,0,0,.12)}
+.timer-pop.show{display:flex}
+.timer-pop button{border:2px solid var(--line);background:var(--bg);border-radius:14px;font-size:22px;font-weight:700;padding:10px 18px}
+.timer-big{position:absolute;top:34px;left:60px;background:var(--ink);color:#fff;font-family:var(--hfont);font-size:44px;font-weight:700;padding:10px 30px;border-radius:20px;display:none;z-index:30;direction:ltr}
+.timer-big.show{display:block}.timer-big.end{background:var(--bad);animation:pulse 1s infinite}
+@keyframes pulse{50%{transform:scale(1.06)}}
+
+/* cover */
+.cover{display:grid;grid-template-columns:1fr 820px;align-items:center;gap:40px;padding-top:60px}
+.cover h1{font-size:120px;line-height:1.1;margin:28px 0 20px}
+.cover h1 span{color:var(--force)}
+.meta{display:grid;grid-template-columns:auto 1fr;gap:16px 26px;font-size:28px;margin-top:46px;max-width:780px}
+.meta b{color:var(--muted);font-weight:600}
+.meta [contenteditable]{border-bottom:2px dashed var(--line);outline:none;min-width:200px;padding-bottom:2px}
+.meta [contenteditable]:focus{border-color:var(--motion)}
+
+/* objectives */
+.obj{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:40px}
+.obj .card{display:flex;gap:26px;padding:30px 34px;align-items:flex-start}
+.obj .num{width:84px;height:84px;border-radius:24px;display:grid;place-items:center;flex:none}
+.obj .num .ic{width:52px;height:52px}
+.obj p{margin:0;font-size:29px;line-height:1.6}
+.strat{margin-top:34px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-size:24px}
+.strat span.t{font-weight:700;color:var(--muted)}
+.strat span.p{background:var(--card);border:2px solid var(--line);border-radius:999px;padding:8px 22px;font-weight:600}
+
+/* concept flip */
+.flips{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:34px}
+.flip{height:290px;perspective:1400px;cursor:pointer}
+.flip .in{position:relative;width:100%;height:100%;transition:transform .7s;transform-style:preserve-3d}
+.flip.on .in{transform:rotateY(180deg)}
+.flip .fc,.flip .bc{position:absolute;inset:0;backface-visibility:hidden;border-radius:28px;padding:30px;display:flex;flex-direction:column;justify-content:center}
+.flip .fc{background:var(--card);border:2px solid var(--line);align-items:center;text-align:center;gap:16px}
+.flip .fc .ic{width:84px;height:84px}
+.flip .fc h3{font-size:42px}
+.flip .fc small{font-size:20px;color:var(--muted)}
+.flip .bc{transform:rotateY(180deg);color:#fff;font-size:27px;line-height:1.6}
+.flip .bc b{font-size:32px;font-family:var(--hfont);margin-bottom:8px}
+.flip .bc .u{margin-top:14px;font-size:24px;opacity:.9}
+
+/* classify */
+.pool{display:flex;flex-wrap:wrap;gap:14px;min-height:110px;margin:20px 0;padding:16px;border:2px dashed var(--line);border-radius:24px}
+.chip{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:12px 20px;font-size:23px;font-weight:600;cursor:grab;user-select:none;max-width:520px;line-height:1.45}
+.chip.sel{border-color:var(--motion);box-shadow:0 0 0 4px var(--soft-m)}
+.chip.right{border-color:var(--ok);background:var(--soft-o)}.chip.wrong{border-color:var(--bad);background:#FCE3E6}
+.zones{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
+.zone{min-height:230px;border-radius:26px;padding:18px 20px;display:flex;flex-direction:column;gap:10px;border:3px solid transparent;transition:border-color .2s}
+.zone.over{border-color:var(--ink)}
+.zone h3{font-size:32px;display:flex;align-items:center;gap:12px}
+.zone .chip{max-width:none;font-size:21px;padding:9px 16px}
+
+/* quiz */
+.quiz{display:grid;grid-template-columns:1fr 420px;gap:40px;margin-top:30px}
+.qbox{padding:40px 46px}
+.qn{font-size:24px;color:var(--muted);font-weight:600}
+.qt{font-size:40px;font-weight:700;font-family:var(--hfont);margin:12px 0 28px;line-height:1.5}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.opt{text-align:right;border:2px solid var(--line);background:var(--bg);border-radius:20px;padding:22px 26px;font-size:28px;font-weight:600;display:flex;gap:16px;align-items:center}
+.opt i{font-style:normal;width:46px;height:46px;border-radius:50%;background:var(--card);border:2px solid var(--line);display:grid;place-items:center;font-size:22px;flex:none}
+.opt.right{border-color:var(--ok);background:var(--soft-o)}.opt.wrong{border-color:var(--bad);background:#FCE3E6}
+.fb{margin-top:24px;font-size:26px;min-height:90px;line-height:1.6}
+.score{padding:36px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:16px}
+.score .big{font-family:var(--hfont);font-size:110px;font-weight:700;color:var(--motion);line-height:1}
+.dots{display:flex;gap:12px}
+.dots i{width:22px;height:22px;border-radius:50%;background:var(--line)}
+.dots i.r{background:var(--ok)}.dots i.w{background:var(--bad)}.dots i.c{outline:4px solid var(--soft-m);background:var(--motion)}
+
+/* life cards */
+.life{display:grid;grid-template-columns:repeat(4,1fr);gap:26px;margin-top:40px}
+.life .card{padding:34px 30px;display:flex;flex-direction:column;gap:16px}
+.life .ico{width:110px;height:110px;border-radius:30px;display:grid;place-items:center}
+.life .ico .ic{width:68px;height:68px}
+.life h3{font-size:32px}
+.life .tag{font-size:21px;font-weight:700;padding:6px 16px;border-radius:999px;align-self:flex-start}
+.life p{margin:0;font-size:24px;line-height:1.65;color:#3A4160}
+
+/* example */
+.steps{display:flex;flex-direction:column;gap:16px}
+.step{display:flex;gap:20px;align-items:center;background:var(--card);border:2px solid var(--line);border-radius:22px;padding:18px 26px;font-size:29px;opacity:.12;transform:translateX(-20px);transition:.45s}
+.step.on{opacity:1;transform:none}
+.step b{min-width:150px;color:var(--muted);font-size:24px}
+.try input{font-size:34px;width:200px;padding:10px 18px;border-radius:16px;border:2px solid var(--line);text-align:center;font-family:inherit;direction:ltr}
+.toast{font-size:28px;font-weight:700;min-height:44px}
+table.tb{border-collapse:collapse;width:100%;font-size:23px;text-align:center}
+table.tb th{background:var(--soft-m);color:var(--motion);padding:8px}
+table.tb td{padding:7px;border-bottom:1px solid var(--line)}
+.planets{display:flex;gap:16px}
+.planet{border:3px solid var(--line);background:var(--card);border-radius:22px;padding:14px 18px;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:22px;font-weight:700;min-width:140px}
+.planet.on{border-color:var(--ink)}
+.planet small{font-size:18px;color:var(--muted);font-weight:600}
+.sum{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;margin-top:34px}
+.sum .card{padding:32px;border-top:12px solid}
+.sum h3{font-size:34px;margin-bottom:12px}
+.sum p{font-size:25px;line-height:1.6;margin:0 0 14px}
+.sum .eqb{font-size:32px;background:var(--bg);border-radius:14px;padding:10px 18px;display:inline-block}
+.hw{display:grid;grid-template-columns:1fr 1fr;gap:26px;margin-top:28px}
+.hw .card{padding:28px 32px;display:flex;gap:22px;align-items:flex-start;font-size:25px;line-height:1.6}
+.hw .card .ic{width:58px;height:58px}
+.reveal{max-height:0;overflow:hidden;transition:max-height .6s ease}
+.reveal.on{max-height:400px}
+</style>
+</head>
+<body>
+
+<!-- ============ ICONS (hand-drawn SVG symbols) ============ -->
+<svg width="0" height="0" style="position:absolute">
+<defs>
+  <symbol id="i-target" viewBox="0 0 48 48"><circle cx="22" cy="26" r="17"/><circle cx="22" cy="26" r="10"/><circle cx="22" cy="26" r="3" fill="currentColor"/><path d="M22 26 38 10"/><path d="M33 7v5h5l4-4h-5V3z"/></symbol>
+  <symbol id="i-bulb" viewBox="0 0 48 48"><path d="M17 31c-3.5-3-6-6.5-6-11.5a13 13 0 0 1 26 0c0 5-2.5 8.5-6 11.5v4H17z"/><path d="M19 40h10M21 44.5h6"/><path d="M20 22l4 4 4-4M24 26v8"/></symbol>
+  <symbol id="i-car" viewBox="0 0 48 48"><path d="M4 31v-6l5-2 6-8h15l8 8 6 2v6z"/><path d="M15 15l-2 8h25"/><path d="M24 15v8"/><circle cx="13" cy="32" r="4.5"/><circle cx="35" cy="32" r="4.5"/><path d="M2 40h44" stroke-dasharray="4 5"/></symbol>
+  <symbol id="i-apple" viewBox="0 0 48 48"><path d="M24 15c-4.5-3.2-13-2-14 6.5C9 31 15.5 42 20 42c2 0 2.8-1.2 4-1.2s2 1.2 4 1.2c4.5 0 11-11 10-20.5C37 13 28.5 11.8 24 15z"/><path d="M24 15c0-4 1.7-7.5 4.5-9"/><path d="M26.5 10.5c2.6-2.6 7-2.6 9-.6-2.6 2.6-6.6 2.6-9 .6z"/><path d="M15 23c0-2 1-3.5 2.5-4.5"/></symbol>
+  <symbol id="i-rocket" viewBox="0 0 48 48"><path d="M24 3c7.5 6.5 9.5 15 7.5 25h-15C14.5 18 16.5 9.5 24 3z"/><circle cx="24" cy="16.5" r="3.5"/><path d="M16.5 25 11 32l6.5-.8M31.5 25 37 32l-6.5-.8"/><path d="M20.5 32c0 4.5 1.6 7.8 3.5 10.5 1.9-2.7 3.5-6 3.5-10.5"/></symbol>
+  <symbol id="i-swap" viewBox="0 0 48 48"><path d="M5 16h32M30 9l7 7-7 7"/><path d="M43 33H11M18 26l-7 7 7 7"/></symbol>
+  <symbol id="i-scale" viewBox="0 0 48 48"><rect x="5" y="9" width="38" height="33" rx="7"/><path d="M13 26a11 11 0 0 1 22 0"/><path d="M24 26l6-6"/><circle cx="24" cy="26" r="1.8" fill="currentColor"/><path d="M14 35h20"/></symbol>
+  <symbol id="i-planet" viewBox="0 0 48 48"><circle cx="24" cy="24" r="11"/><path d="M14.2 29.5C6.5 33.8 2.6 37.6 4 39.6c2.2 3 13.4-1 25-9S46.2 13.4 44 10.4c-1.4-2-6.6-.6-13 2.8"/><circle cx="40" cy="38" r="1.5" fill="currentColor"/><circle cx="8" cy="9" r="1.2" fill="currentColor"/></symbol>
+  <symbol id="i-q" viewBox="0 0 48 48"><path d="M8 37V13a6 6 0 0 1 6-6h20a6 6 0 0 1 6 6v14a6 6 0 0 1-6 6H16z"/><path d="M19 15.5a5 5 0 1 1 6.5 4.8c-1 .4-1.5 1.2-1.5 2.2v1"/><circle cx="24" cy="28" r="1.3" fill="currentColor"/></symbol>
+  <symbol id="i-check" viewBox="0 0 48 48"><circle cx="24" cy="24" r="19"/><path d="M15 24.5l6.5 6.5L34 18"/></symbol>
+  <symbol id="i-book" viewBox="0 0 48 48"><path d="M24 12c-4-3-11-4-18-3v29c7-1 14 0 18 3 4-3 11-4 18-3V9c-7-1-14 0-18 3z"/><path d="M24 12v29"/><path d="M11 17h7M11 23h7M30 17h7M30 23h7"/></symbol>
+  <symbol id="i-belt" viewBox="0 0 48 48"><path d="M12 44V16a6 6 0 0 1 6-6"/><circle cx="27" cy="9" r="4.5"/><path d="M18 44V25a7 7 0 0 1 7-7h4a7 7 0 0 1 7 7v19"/><path d="M34 18 19 37" stroke-width="4.2"/><rect x="15" y="35" width="8" height="5" rx="1.5"/></symbol>
+  <symbol id="i-ball" viewBox="0 0 48 48"><circle cx="24" cy="24" r="19"/><path d="M24 15l7 5-2.7 8.3h-8.6L17 20z"/><path d="M24 15V6M31 20l8.5-3M28.3 28.3l5 7.2M19.7 28.3l-5 7.2M17 20l-8.5-3"/></symbol>
+  <symbol id="i-cart" viewBox="0 0 48 48"><path d="M3 8h6l5 24h24l5-17H11.5"/><circle cx="17" cy="40" r="3.2"/><circle cx="35" cy="40" r="3.2"/><path d="M17 21h22M18.5 27h18"/></symbol>
+  <symbol id="i-mass" viewBox="0 0 48 48"><path d="M17 17a7 7 0 0 1 14 0"/><path d="M10 43l4-26h20l4 26z"/><path d="M19 27v10M19 32l6-5M21 32l4 5"/></symbol>
+  <symbol id="i-speed" viewBox="0 0 48 48"><path d="M6 34a18 18 0 1 1 36 0"/><path d="M24 34l9-11"/><circle cx="24" cy="34" r="2.5" fill="currentColor"/><path d="M11 22l3 2M24 16v4M37 22l-3 2"/></symbol>
+  <symbol id="i-pencil" viewBox="0 0 48 48"><path d="M31 7l10 10L18 40l-12 2 2-12z"/><path d="M27 11l10 10M8 30l10 10"/></symbol>
+  <symbol id="i-timer" viewBox="0 0 48 48"><circle cx="24" cy="27" r="16"/><path d="M24 27V18M19 4h10M24 4v7M37 13l3-3"/></symbol>
+  <symbol id="i-star" viewBox="0 0 48 48"><path d="M24 5l5.7 12.2 13.3 1.5-9.9 9 2.8 13.1L24 34.2l-11.9 6.6 2.8-13.1-9.9-9 13.3-1.5z"/></symbol>
+  <symbol id="i-lab" viewBox="0 0 48 48"><path d="M18 5h12M20 5v13L8 39a3.5 3.5 0 0 0 3 5h26a3.5 3.5 0 0 0 3-5L28 18V5"/><path d="M13 31h22"/><circle cx="21" cy="37" r="1.6" fill="currentColor"/><circle cx="28" cy="35" r="1.2" fill="currentColor"/></symbol>
+  <symbol id="i-push" viewBox="0 0 48 48"><rect x="24" y="14" width="19" height="19" rx="3"/><path d="M3 23.5h15M12 17l7 6.5-7 6.5"/><path d="M5 40h40"/></symbol>
+  <symbol id="i-team" viewBox="0 0 48 48"><circle cx="16" cy="14" r="6"/><circle cx="33" cy="16" r="5"/><path d="M4 40c0-7 5-12 12-12s12 5 12 12"/><path d="M27 29c1.8-.7 3.8-1 6-1 6 0 11 4.5 11 11"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 48 48"><path d="M3 24s8-13 21-13 21 13 21 13-8 13-21 13S3 24 3 24z"/><circle cx="24" cy="24" r="6"/></symbol>
+  <symbol id="i-next" viewBox="0 0 48 48"><path d="M29 10 15 24l14 14"/></symbol>
+  <symbol id="i-prev" viewBox="0 0 48 48"><path d="M19 10l14 14-14 14"/></symbol>
+  <symbol id="i-full" viewBox="0 0 48 48"><path d="M6 17V6h11M31 6h11v11M42 31v11H31M17 42H6V31"/></symbol>
+  <symbol id="i-play" viewBox="0 0 48 48"><path d="M14 8l26 16-26 16z"/></symbol>
+  <symbol id="i-reset" viewBox="0 0 48 48"><path d="M8 24a16 16 0 1 0 5-11.6"/><path d="M8 6v8h8"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 48 48"><path d="M24 10v28M10 24h28"/></symbol>
+  <symbol id="i-minus" viewBox="0 0 48 48"><path d="M10 24h28"/></symbol>
+  <symbol id="i-hand" viewBox="0 0 48 48"><path d="M16 26V11a3 3 0 0 1 6 0v11-15a3 3 0 0 1 6 0v15-12a3 3 0 0 1 6 0v14-8a3 3 0 0 1 6 0v12c0 9-6 16-14 16-6 0-9-3-12-8l-6-9a3 3 0 0 1 5-3z"/></symbol>
+  <symbol id="i-concept" viewBox="0 0 48 48"><circle cx="24" cy="10" r="5"/><circle cx="9" cy="37" r="5"/><circle cx="39" cy="37" r="5"/><path d="M21.5 14.5 11.5 32.5M26.5 14.5l10 18M14 37h20"/></symbol>
+  <symbol id="i-wave" viewBox="0 0 48 48"><circle cx="34" cy="12" r="4.5"/><path d="M8 26l10-6 9 4 7-6"/><path d="M3 36c4 0 4-3 8-3s4 3 8 3 4-3 8-3 4 3 8 3 4-3 8-3"/><path d="M3 43c4 0 4-3 8-3s4 3 8 3 4-3 8-3 4 3 8 3 4-3 8-3"/></symbol>
+  <marker id="mf" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#EC5F33"/></marker>
+  <marker id="mm" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#2B67E5"/></marker>
+  <marker id="mk" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#1B2340"/></marker>
+  <marker id="mo" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#13A07C"/></marker>
+</defs>
+</svg>
+
+<div class="stage" id="stage">
+
+<!-- ===================== 1. COVER ===================== -->
+<section class="slide active" data-title="الغلاف">
+  <div class="cover">
+    <div>
+      <span class="kicker f"><svg class="ic"><use href="#i-apple"/></svg>فيزياء ١ · القوى والحركة</span>
+      <h1>قوانين <span>نيوتن</span><br>في الحركة</h1>
+      <p class="lead">درس تفاعلي: نجرّب القوة، ونشاهد الحركة، ونستنتج القانون بأنفسنا.</p>
+      <div class="meta">
+        <b>المعلمة</b><span contenteditable="true">اكتبي الاسم هنا</span>
+        <b>المدرسة</b><span contenteditable="true">اسم المدرسة</span>
+        <b>الصف</b><span contenteditable="true">الأول الثانوي</span>
+        <b>التاريخ</b><span contenteditable="true">١٤٤٨ هـ</span>
+      </div>
+    </div>
+    <svg viewBox="0 0 820 760" width="820" height="760">
+      <circle cx="420" cy="380" r="330" fill="#FDE8DF"/>
+      <circle cx="420" cy="380" r="250" fill="none" stroke="#EC5F33" stroke-width="3" stroke-dasharray="6 14" opacity=".55"/>
+      <!-- tree branch -->
+      <path d="M150 120c90 10 170 40 240 95" fill="none" stroke="#1B2340" stroke-width="10" stroke-linecap="round"/>
+      <path d="M260 150c20-30 60-40 90-30-20 30-60 40-90 30z" fill="#13A07C"/>
+      <path d="M200 128c10-34 46-50 78-46-12 34-46 50-78 46z" fill="#13A07C" opacity=".8"/>
+      <!-- apple falling -->
+      <g transform="translate(390 270)">
+        <path d="M0 -28c-14-10-40-6-43 20-3 29 17 62 31 62 6 0 8.5-3.5 12-3.5s6 3.5 12 3.5c14 0 34-33 31-62C40-34 14-38 0-28z" fill="#EC5F33" stroke="#1B2340" stroke-width="5" stroke-linejoin="round"/>
+        <path d="M0 -28c0-12 5-22 13-27" stroke="#1B2340" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <path d="M-20 -4c0-6 3-11 8-14" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" opacity=".7"/>
+      </g>
+      <path d="M330 200v40M450 200v40M390 180v30" stroke="#1B2340" stroke-width="5" stroke-linecap="round" opacity=".35"/>
+      <line x1="390" y1="345" x2="390" y2="440" stroke="#EC5F33" stroke-width="9" marker-end="url(#mf)"/>
+      <text x="410" y="420" font-size="40" font-weight="700" fill="#EC5F33" font-family="IBM Plex Sans Arabic">W</text>
+      <!-- cart -->
+      <g transform="translate(470 520)">
+        <rect x="0" y="0" width="190" height="90" rx="16" fill="#2B67E5" stroke="#1B2340" stroke-width="5"/>
+        <rect x="22" y="20" width="44" height="34" rx="6" fill="#fff" opacity=".85"/>
+        <rect x="80" y="20" width="44" height="34" rx="6" fill="#fff" opacity=".85"/>
+        <circle cx="42" cy="100" r="22" fill="#fff" stroke="#1B2340" stroke-width="5"/>
+        <circle cx="150" cy="100" r="22" fill="#fff" stroke="#1B2340" stroke-width="5"/>
+      </g>
+      <line x1="270" y1="565" x2="450" y2="565" stroke="#1B2340" stroke-width="9" marker-end="url(#mk)"/>
+      <text x="330" y="540" font-size="40" font-weight="700" fill="#1B2340" font-family="IBM Plex Sans Arabic">F</text>
+      <path d="M180 645h560" stroke="#1B2340" stroke-width="5" stroke-linecap="round"/>
+      <path d="M200 665h40M290 665h40M380 665h40M470 665h40M560 665h40M650 665h40" stroke="#1B2340" stroke-width="4" stroke-linecap="round" opacity=".3"/>
+      <rect x="560" y="140" width="210" height="84" rx="22" fill="#fff" stroke="#1B2340" stroke-width="4"/>
+      <text x="665" y="196" text-anchor="middle" font-size="44" font-weight="700" fill="#1B2340" font-family="IBM Plex Sans Arabic" direction="ltr">F = ma</text>
+    </svg>
+  </div>
+</section>
+
+<!-- ===================== 2. OBJECTIVES ===================== -->
+<section class="slide" data-title="الأهداف">
+  <span class="kicker"><svg class="ic"><use href="#i-target"/></svg>أهداف الدرس</span>
+  <h2>في نهاية الدرس يُتوقَّع من الطالبة أن:</h2>
+  <div class="obj">
+    <div class="card"><div class="num" style="background:var(--soft-f);color:var(--force)"><svg class="ic"><use href="#i-push"/></svg></div><p>تُعرِّف القوة والقوة المحصلة، وتميّز بين القوى <b>المتزنة</b> وغير المتزنة.</p></div>
+    <div class="card"><div class="num" style="background:var(--soft-m);color:var(--motion)"><svg class="ic"><use href="#i-belt"/></svg></div><p>تفسّر قانون نيوتن الأول ومفهوم <b>القصور الذاتي</b> من مواقف حياتية.</p></div>
+    <div class="card"><div class="num" style="background:var(--soft-o);color:var(--ok)"><svg class="ic"><use href="#i-mass"/></svg></div><p>تطبّق قانون نيوتن الثاني <bdi class="eq">ΣF = ma</bdi> لحساب التسارع والقوة والكتلة.</p></div>
+    <div class="card"><div class="num" style="background:var(--soft-g);color:#B07405"><svg class="ic"><use href="#i-swap"/></svg></div><p>تحدّد أزواج قوى <b>الفعل ورد الفعل</b> وفق قانون نيوتن الثالث.</p></div>
+  </div>
+  <div class="strat"><span class="t">استراتيجيات الدرس:</span><span class="p">التعلّم بالاستقصاء</span><span class="p">فكّري – زاوجي – شاركي</span><span class="p">المحاكاة التفاعلية</span><span class="p">التصنيف التعاوني</span><span class="p">التقويم البنائي</span></div>
+</section>
+
+<!-- ===================== 3. WARM-UP ===================== -->
+<section class="slide" data-title="التهيئة">
+  <span class="kicker g"><svg class="ic"><use href="#i-q"/></svg>تهيئة · فكّري – زاوجي – شاركي</span>
+  <h2>لماذا يندفع جسمكِ إلى الأمام عندما تتوقف السيارة فجأة؟</h2>
+  <div class="row" style="margin-top:26px;align-items:flex-start">
+    <div style="width:520px;display:flex;flex-direction:column;gap:22px">
+      <p class="lead">شغّلي الحركة، ثم اضغطي «توقّف مفاجئ» وراقبي الراكبة. جرّبي مرة مع الحزام ومرة دونه.</p>
+      <div class="row" style="gap:14px;flex-wrap:wrap">
+        <button class="btn m" id="w-go"><svg class="ic"><use href="#i-play"/></svg>انطلاق</button>
+        <button class="btn f" id="w-stop"><svg class="ic"><use href="#i-hand"/></svg>توقّف مفاجئ</button>
+      </div>
+      <label class="ctrl" style="display:flex;gap:14px;align-items:center;cursor:pointer"><input type="checkbox" id="w-belt" style="width:30px;height:30px;accent-color:var(--ok)"> ربط حزام الأمان</label>
+      <button class="btn ghost" id="w-rev"><svg class="ic"><use href="#i-bulb"/></svg>اكشفي التفسير</button>
+      <div class="reveal" id="w-ans"><div class="law" style="border-color:var(--ok);font-size:26px">جسمكِ كان يتحرك مع السيارة، فيميل إلى <b style="color:var(--ok)">الاستمرار في حركته</b> حتى بعد توقفها. هذه الممانعة لتغيير الحالة الحركية تُسمّى <b style="color:var(--ok)">القصور الذاتي</b>، ويفسّرها قانون نيوتن الأول.</div></div>
+    </div>
+    <svg class="scene" id="w-svg" viewBox="0 0 1060 560" width="1060" height="560">
+      <rect x="0" y="420" width="1060" height="140" fill="#3B4360" rx="0"/>
+      <g id="w-dash"></g>
+      <g id="w-car" transform="translate(300 170)">
+        <path d="M30 250V180l60-20 80-100h220l110 100 70 20v70z" fill="#2B67E5" stroke="#1B2340" stroke-width="6" stroke-linejoin="round"/>
+        <path d="M190 72 135 160h135V72zM290 72v88h170l-90-88z" fill="#E2EBFD" stroke="#1B2340" stroke-width="5" stroke-linejoin="round"/>
+        <!-- passenger -->
+        <g id="w-pass" style="transform-origin:330px 205px;transition:transform .35s cubic-bezier(.3,1.6,.5,1)">
+          <rect x="300" y="150" width="56" height="70" rx="22" fill="#EC5F33"/>
+          <circle cx="330" cy="125" r="26" fill="#F5C9A8" stroke="#1B2340" stroke-width="4"/>
+          <path d="M304 120c4-22 50-26 54 2" fill="#1B2340"/>
+        </g>
+        <path id="w-beltl" d="M352 152 304 214" stroke="#13A07C" stroke-width="9" stroke-linecap="round" opacity="0"/>
+        <rect x="270" y="150" width="20" height="90" rx="8" fill="#1B2340"/>
+        <circle cx="140" cy="255" r="42" fill="#fff" stroke="#1B2340" stroke-width="7"/><circle cx="140" cy="255" r="14" fill="#1B2340"/>
+        <circle cx="490" cy="255" r="42" fill="#fff" stroke="#1B2340" stroke-width="7"/><circle cx="490" cy="255" r="14" fill="#1B2340"/>
+      </g>
+      <g id="w-arrow" opacity="0"><line x1="560" y1="165" x2="720" y2="165" stroke="#13A07C" stroke-width="10" marker-end="url(#mo)"/><text x="640" y="138" text-anchor="middle" font-size="30" font-weight="700" fill="#13A07C" font-family="IBM Plex Sans Arabic">الجسم يستمر بالحركة</text></g>
+      <text id="w-state" x="530" y="64" font-size="32" font-weight="700" fill="#1B2340" text-anchor="middle"></text>
+    </svg>
+  </div>
+</section>
+
+<!-- ===================== 4. CONCEPTS ===================== -->
+<section class="slide" data-title="المفاهيم">
+  <span class="kicker"><svg class="ic"><use href="#i-concept"/></svg>المفاهيم الأساسية</span>
+  <h2>اضغطي على البطاقة لاكتشاف المفهوم</h2>
+  <div class="flips">
+    <div class="flip"><div class="in"><div class="fc"><svg class="ic" style="color:var(--force)"><use href="#i-push"/></svg><h3>القوة</h3><small>اضغطي للكشف</small></div><div class="bc" style="background:var(--force)"><b>القوة</b>دفع أو سحب يؤثر في الجسم فيغيّر حالته الحركية أو شكله. كمية متّجهة.<span class="u">الوحدة: نيوتن <bdi class="eq">N</bdi></span></div></div></div>
+    <div class="flip"><div class="in"><div class="fc"><svg class="ic" style="color:var(--ink)"><use href="#i-team"/></svg><h3>القوة المحصلة</h3><small>اضغطي للكشف</small></div><div class="bc" style="background:var(--ink)"><b>القوة المحصلة</b>المجموع المتّجهي لجميع القوى المؤثرة في الجسم.<span class="u">الرمز: <bdi class="eq">ΣF</bdi></span></div></div></div>
+    <div class="flip"><div class="in"><div class="fc"><svg class="ic" style="color:var(--ok)"><use href="#i-belt"/></svg><h3>القصور الذاتي</h3><small>اضغطي للكشف</small></div><div class="bc" style="background:var(--ok)"><b>القصور الذاتي</b>ممانعة الجسم لأي تغيير في حالته الحركية، ويزداد بزيادة كتلته.</div></div></div>
+    <div class="flip"><div class="in"><div class="fc"><svg class="ic" style="color:#B07405"><use href="#i-mass"/></svg><h3>الكتلة</h3><small>اضغطي للكشف</small></div><div class="bc" style="background:#C98A0E"><b>الكتلة</b>مقدار ما يحويه الجسم من مادة، وهي مقياس لقصوره الذاتي، ولا تتغير بتغير المكان.<span class="u">الوحدة: <bdi class="eq">kg</bdi></span></div></div></div>
+    <div class="flip"><div class="in"><div class="fc"><svg class="ic" style="color:var(--motion)"><use href="#i-speed"/></svg><h3>التسارع</h3><small>اضغطي للكشف</small></div><div class="bc" style="background:var(--motion)"><b>التسارع</b>المعدل الزمني لتغيّر السرعة.<span class="u">الوحدة: <bdi class="eq">m/s²</bdi></span></div></div></div>
+    <div class="flip"><div class="in"><div class="fc"><svg class="ic" style="color:#7A4FD0"><use href="#i-planet"/></svg><h3>الوزن</h3><small>اضغطي للكشف</small></div><div class="bc" style="background:#7A4FD0"><b>الوزن</b>قوة جذب الأرض (أو الكوكب) للجسم، ويتغير بتغير المكان.<span class="u"><bdi class="eq">W = mg</bdi> · الوحدة <bdi class="eq">N</bdi></span></div></div></div>
+  </div>
+</section>
+
+<!-- ===================== 5. NET FORCE ===================== -->
+<section class="slide" data-title="القوة المحصلة">
+  <span class="kicker f"><svg class="ic"><use href="#i-lab"/></svg>تجربة تفاعلية ١ · القوة المحصلة</span>
+  <h2>شدّ الحبل: متى يتحرك الصندوق؟</h2>
+  <div class="row" style="margin-top:20px;align-items:flex-start">
+    <div style="width:540px;display:flex;flex-direction:column;gap:20px">
+      <div class="card" style="padding:22px 26px">
+        <div class="ctrl" style="display:flex;justify-content:space-between;align-items:center;margin:0 0 14px">
+          <span>الفريق الأيمن <bdi class="eq" id="nf-r" style="color:var(--force)">30 N</bdi></span>
+          <span class="row" style="gap:10px"><button class="btn ghost" style="padding:8px 14px" data-nf="r,-10"><svg class="ic"><use href="#i-minus"/></svg></button><button class="btn f" style="padding:8px 14px" data-nf="r,10"><svg class="ic"><use href="#i-plus"/></svg></button></span>
+        </div>
+        <div class="ctrl" style="display:flex;justify-content:space-between;align-items:center;margin:0">
+          <span>الفريق الأيسر <bdi class="eq" id="nf-l" style="color:var(--motion)">20 N</bdi></span>
+          <span class="row" style="gap:10px"><button class="btn ghost" style="padding:8px 14px" data-nf="l,-10"><svg class="ic"><use href="#i-minus"/></svg></button><button class="btn m" style="padding:8px 14px" data-nf="l,10"><svg class="ic"><use href="#i-plus"/></svg></button></span>
+        </div>
+      </div>
+      <div class="read">
+        <div style="flex:1"><small>القوة المحصلة <bdi class="eq">ΣF</bdi></small><span id="nf-net"></span></div>
+        <div style="flex:1"><small>حالة القوى</small><span id="nf-st" style="font-size:28px"></span></div>
+      </div>
+      <div class="row" style="gap:14px"><button class="btn o" id="nf-go"><svg class="ic"><use href="#i-play"/></svg>ابدئي الشد</button><button class="btn ghost" id="nf-reset"><svg class="ic"><use href="#i-reset"/></svg>إعادة</button></div>
+      <div class="inq"><svg class="ic"><use href="#i-q"/></svg><div>اجعلي القوتين متساويتين أثناء حركة الصندوق… هل يتوقف؟ ماذا يحدث لسرعته؟</div></div>
+    </div>
+    <svg class="scene" id="nf-svg" viewBox="0 0 1040 560" width="1040" height="560">
+      <rect x="0" y="430" width="1040" height="130" fill="#EFE9DC"/>
+      <path d="M0 430h1040" stroke="#1B2340" stroke-width="4"/>
+      <line x1="520" y1="430" x2="520" y2="470" stroke="#1B2340" stroke-width="4" stroke-dasharray="6 6"/>
+      <text x="520" y="510" text-anchor="middle" font-size="24" fill="#676D86" font-family="IBM Plex Sans Arabic">نقطة البداية</text>
+      <!-- teams -->
+      <g transform="translate(985 300)" fill="#EC5F33"><circle cx="0" cy="0" r="24"/><rect x="-26" y="30" width="52" height="96" rx="20"/></g>
+      <g transform="translate(55 300)" fill="#2B67E5"><circle cx="0" cy="0" r="24"/><rect x="-26" y="30" width="52" height="96" rx="20"/></g>
+      <line id="nf-ropeR" y1="370" y2="370" stroke="#B9935E" stroke-width="7"/>
+      <line id="nf-ropeL" y1="370" y2="370" stroke="#B9935E" stroke-width="7"/>
+      <g id="nf-box"><rect x="-70" y="290" width="140" height="140" rx="14" fill="#F3C969" stroke="#1B2340" stroke-width="5"/><path d="M-70 290l140 140M70 290l-140 140" stroke="#1B2340" stroke-width="3" opacity=".25"/><text x="0" y="372" text-anchor="middle" font-size="32" font-weight="700" fill="#1B2340" font-family="IBM Plex Sans Arabic">10 kg</text></g>
+      <line id="nf-aR" y1="250" y2="250" stroke="#EC5F33" stroke-width="10" marker-end="url(#mf)"/>
+      <line id="nf-aL" y1="250" y2="250" stroke="#2B67E5" stroke-width="10" marker-end="url(#mm)"/>
+      <text id="nf-tR" y="232" font-size="28" font-weight="700" fill="#EC5F33" text-anchor="middle" font-family="IBM Plex Sans Arabic"></text>
+      <text id="nf-tL" y="232" font-size="28" font-weight="700" fill="#2B67E5" text-anchor="middle" font-family="IBM Plex Sans Arabic"></text>
+      <line id="nf-aN" y1="150" y2="150" stroke="#1B2340" stroke-width="12" marker-end="url(#mk)"/>
+      <text id="nf-tN" y="125" font-size="30" font-weight="700" fill="#1B2340" text-anchor="middle" font-family="IBM Plex Sans Arabic"></text>
+      <text id="nf-v" x="520" y="60" font-size="28" font-weight="600" fill="#676D86" text-anchor="middle" font-family="IBM Plex Sans Arabic"></text>
+    </svg>
+  </div>
+</section>
+
+<!-- ===================== 6. FIRST LAW ===================== -->
+<section class="slide" data-title="القانون الأول">
+  <span class="kicker o"><svg class="ic"><use href="#i-belt"/></svg>قانون نيوتن الأول · قانون القصور الذاتي</span>
+  <p class="law" style="margin-top:22px;border-color:var(--ok)">يبقى الجسم <b style="color:var(--ok)">الساكن ساكنًا</b>، والجسم <b style="color:var(--ok)">المتحرك متحركًا بسرعة ثابتة في خط مستقيم</b>، ما لم تؤثر فيه قوة محصلة خارجية.</p>
+  <div class="row" style="margin-top:26px;align-items:flex-start">
+    <div style="width:540px;display:flex;flex-direction:column;gap:18px">
+      <div class="ctrl" style="margin:0">اختاري نوع السطح:</div>
+      <div class="row" style="gap:12px;flex-wrap:wrap" id="l1-surf"></div>
+      <div class="row" style="gap:14px"><button class="btn o" id="l1-go"><svg class="ic"><use href="#i-hand"/></svg>ادفعي القرص</button><button class="btn ghost" id="l1-reset"><svg class="ic"><use href="#i-reset"/></svg>إعادة</button></div>
+      <div class="read">
+        <div><small>السرعة</small><span id="l1-v">0.0</span> <small style="display:inline">m/s</small></div>
+        <div><small>المسافة</small><span id="l1-d">0.0</span> <small style="display:inline">m</small></div>
+      </div>
+      <div class="inq"><svg class="ic"><use href="#i-q"/></svg><div>لاحظي المسافات بين النقاط. ماذا تتوقعين لو <b>انعدم الاحتكاك</b> تمامًا؟</div></div>
+    </div>
+    <svg class="scene" id="l1-svg" viewBox="0 0 1040 470" width="1040" height="470">
+      <text x="520" y="70" text-anchor="middle" font-size="30" font-weight="700" fill="#1B2340" font-family="IBM Plex Sans Arabic" id="l1-name"></text>
+      <rect id="l1-track" x="40" y="250" width="960" height="90" rx="14"/>
+      <g id="l1-tex"></g>
+      <g id="l1-dots"></g>
+      <g id="l1-puck"><ellipse cx="0" cy="250" rx="48" ry="16" fill="#1B2340" opacity=".25"/><rect x="-46" y="214" width="92" height="36" rx="18" fill="#EC5F33" stroke="#1B2340" stroke-width="5"/><ellipse cx="0" cy="214" rx="46" ry="14" fill="#F6926F" stroke="#1B2340" stroke-width="5"/></g>
+      <line id="l1-fr" y1="180" y2="180" stroke="#2B67E5" stroke-width="9" marker-end="url(#mm)" opacity="0"/>
+      <text id="l1-frt" y="160" text-anchor="middle" font-size="24" font-weight="700" fill="#2B67E5" font-family="IBM Plex Sans Arabic" opacity="0">احتكاك</text>
+      <text id="l1-lap" x="520" y="430" text-anchor="middle" font-size="26" font-weight="600" fill="#676D86" font-family="IBM Plex Sans Arabic"></text>
+    </svg>
+  </div>
+</section>
+
+<!-- ===================== 7. SECOND LAW ===================== -->
+<section class="slide" data-title="القانون الثاني">
+  <span class="kicker"><svg class="ic"><use href="#i-mass"/></svg>قانون نيوتن الثاني</span>
+  <p class="law" style="margin-top:22px">تسارع الجسم يتناسب <b>طرديًا</b> مع القوة المحصلة المؤثرة فيه، و<b>عكسيًا</b> مع كتلته: &nbsp;<bdi class="eq" style="font-size:36px;color:var(--motion)">a = ΣF / m</bdi></p>
+  <div class="row" style="margin-top:22px;align-items:flex-start;gap:30px">
+    <div style="width:470px;display:flex;flex-direction:column;gap:12px">
+      <div class="ctrl"><label><span>القوة المحصلة</span><bdi id="l2-Fv">20 N</bdi></label><input type="range" id="l2-F" min="5" max="60" step="5" value="20"></div>
+      <div class="ctrl"><label><span>الكتلة</span><bdi id="l2-mv">4 kg</bdi></label><input type="range" id="l2-m" min="1" max="12" step="1" value="4"></div>
+      <div class="read"><div style="flex:1"><small>التسارع <bdi class="eq">a</bdi></small><span id="l2-a">5.0</span> <small style="display:inline">m/s²</small></div><div style="flex:1"><small>زمن قطع <bdi class="eq">20 m</bdi></small><span id="l2-t">—</span> <small style="display:inline">s</small></div></div>
+      <div class="row" style="gap:12px;margin-top:6px"><button class="btn m" id="l2-go"><svg class="ic"><use href="#i-play"/></svg>انطلاق</button><button class="btn o" id="l2-rec"><svg class="ic"><use href="#i-pencil"/></svg>سجّلي</button><button class="btn ghost" id="l2-clr"><svg class="ic"><use href="#i-reset"/></svg></button></div>
+    </div>
+    <div style="flex:1;display:flex;flex-direction:column;gap:18px">
+      <svg class="scene" id="l2-svg" viewBox="0 0 1100 270" width="1100" height="270">
+        <path d="M60 220h980" stroke="#1B2340" stroke-width="5"/>
+        <g id="l2-ticks"></g>
+        <g id="l2-cart">
+          <line id="l2-arr" y1="150" y2="150" stroke="#EC5F33" stroke-width="10" marker-end="url(#mf)"/>
+          <rect x="0" y="120" width="170" height="70" rx="12" fill="#2B67E5" stroke="#1B2340" stroke-width="5"/>
+          <g id="l2-blocks"></g>
+          <circle cx="36" cy="200" r="17" fill="#fff" stroke="#1B2340" stroke-width="5"/><circle cx="134" cy="200" r="17" fill="#fff" stroke="#1B2340" stroke-width="5"/>
+        </g>
+      </svg>
+      <div class="row" style="gap:20px">
+        <div class="card" style="flex:1;padding:14px 18px"><table class="tb"><thead><tr><th>المحاولة</th><th>F (N)</th><th>m (kg)</th><th>a (m/s²)</th></tr></thead><tbody id="l2-tb"><tr><td colspan="4" style="color:var(--muted)">سجّلي نتائج تجاربك هنا</td></tr></tbody></table></div>
+        <svg class="card" id="l2-chart" viewBox="0 0 440 250" width="440" height="250"></svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 8. THIRD LAW ===================== -->
+<section class="slide" data-title="القانون الثالث">
+  <span class="kicker g"><svg class="ic"><use href="#i-swap"/></svg>قانون نيوتن الثالث · الفعل ورد الفعل</span>
+  <p class="law" style="margin-top:22px;border-color:var(--gold)">لكل <b style="color:#B07405">فعل</b> <b style="color:#B07405">رد فعل</b> مساوٍ له في المقدار ومعاكس له في الاتجاه، ويؤثران في <b style="color:#B07405">جسمين مختلفين</b>: &nbsp;<bdi class="eq" style="font-size:34px;color:#B07405">F<sub>A→B</sub> = −F<sub>B→A</sub></bdi></p>
+  <div class="row" style="margin-top:24px;align-items:flex-start">
+    <div style="width:520px;display:flex;flex-direction:column;gap:12px">
+      <div class="ctrl"><label><span>كتلة المتزلجة «نورة» (يسار)</span><bdi id="l3-m1v">40 kg</bdi></label><input type="range" id="l3-m1" min="30" max="90" step="5" value="40"></div>
+      <div class="ctrl"><label><span>كتلة المتزلجة «سارة» (يمين)</span><bdi id="l3-m2v">80 kg</bdi></label><input type="range" id="l3-m2" min="30" max="90" step="5" value="80"></div>
+      <div class="row" style="gap:14px"><button class="btn f" id="l3-go"><svg class="ic"><use href="#i-hand"/></svg>تدافعا!</button><button class="btn ghost" id="l3-reset"><svg class="ic"><use href="#i-reset"/></svg>إعادة</button></div>
+      <div class="read"><div style="flex:1"><small>تسارع نورة</small><span id="l3-a1">—</span></div><div style="flex:1"><small>تسارع سارة</small><span id="l3-a2">—</span></div></div>
+      <div class="inq"><svg class="ic"><use href="#i-q"/></svg><div>القوتان متساويتان دائمًا… فلماذا تبتعد إحداهما أسرع من الأخرى؟</div></div>
+    </div>
+    <svg class="scene" id="l3-svg" viewBox="0 0 1040 470" width="1040" height="470">
+      <rect x="0" y="360" width="1040" height="110" fill="#DCEBFA"/>
+      <path d="M0 360h1040" stroke="#1B2340" stroke-width="4"/>
+      <path d="M90 400h120M360 420h160M640 400h130M860 425h110" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
+      <g id="l3-s1"></g><g id="l3-s2"></g>
+      <g id="l3-arrows" opacity="0">
+        <line id="l3-f1" y1="120" y2="120" stroke="#EC5F33" stroke-width="11" marker-end="url(#mf)"/>
+        <line id="l3-f2" y1="120" y2="120" stroke="#EC5F33" stroke-width="11" marker-end="url(#mf)"/>
+        <text id="l3-t1" y="95" text-anchor="middle" font-size="28" font-weight="700" fill="#EC5F33" font-family="IBM Plex Sans Arabic">150 N</text>
+        <text id="l3-t2" y="95" text-anchor="middle" font-size="28" font-weight="700" fill="#EC5F33" font-family="IBM Plex Sans Arabic">150 N</text>
+      </g>
+      <text x="520" y="50" text-anchor="middle" font-size="26" font-weight="600" fill="#676D86" font-family="IBM Plex Sans Arabic">قوة التدافع بين المتزلجتين = 150 N</text>
+    </svg>
+  </div>
+</section>
+
+<!-- ===================== 9. WEIGHT ===================== -->
+<section class="slide" data-title="الوزن والكتلة">
+  <span class="kicker" style="background:#EEE6FB;color:#7A4FD0"><svg class="ic"><use href="#i-planet"/></svg>تطبيق القانون الثاني · الوزن</span>
+  <h2>هل يتغير وزنكِ إذا سافرتِ إلى القمر؟</h2>
+  <div class="row" style="margin-top:20px;align-items:flex-start">
+    <div style="width:640px;display:flex;flex-direction:column;gap:22px">
+      <div class="planets" id="wt-pl"></div>
+      <div class="ctrl"><label><span>كتلة الجسم</span><bdi id="wt-mv">50 kg</bdi></label><input type="range" id="wt-m" min="5" max="100" step="5" value="50"></div>
+      <div class="card" style="padding:26px 30px;font-size:30px;line-height:1.8">
+        <bdi class="eq" style="font-size:40px">W = m × g</bdi><br>
+        <bdi class="eq" id="wt-calc" style="font-size:38px;color:#7A4FD0"></bdi>
+      </div>
+      <div class="inq"><svg class="ic"><use href="#i-q"/></svg><div>غيّري الكوكب: ما الذي تغيّر، <b>الكتلة</b> أم <b>الوزن</b>؟ ولماذا؟</div></div>
+    </div>
+    <svg class="scene" id="wt-svg" viewBox="0 0 900 640" width="900" height="640" style="flex:1">
+      <circle id="wt-bg" cx="760" cy="110" r="90" fill="#2B67E5" opacity=".18"/>
+      <rect x="250" y="440" width="400" height="140" rx="26" fill="#fff" stroke="#1B2340" stroke-width="6"/>
+      <rect x="230" y="400" width="440" height="46" rx="14" fill="#E3DFD5" stroke="#1B2340" stroke-width="6"/>
+      <g id="wt-obj"><rect x="350" y="240" width="200" height="160" rx="20" fill="#7A4FD0" stroke="#1B2340" stroke-width="6"/><text id="wt-objt" x="450" y="335" text-anchor="middle" font-size="40" font-weight="700" fill="#fff" font-family="IBM Plex Sans Arabic">50 kg</text></g>
+      <g transform="translate(450 545)">
+        <path d="M-80 0a80 80 0 0 1 160 0" fill="none" stroke="#E3DFD5" stroke-width="16" stroke-linecap="round"/>
+        <g id="wt-ticks"></g>
+        <line id="wt-needle" x1="0" y1="0" x2="0" y2="-70" stroke="#EC5F33" stroke-width="7" stroke-linecap="round" style="transform:rotate(-90deg);transition:transform .8s cubic-bezier(.3,1.4,.5,1)"/>
+        <circle r="9" fill="#1B2340"/>
+      </g>
+      <text id="wt-W" x="450" y="200" text-anchor="middle" font-size="46" font-weight="700" fill="#EC5F33" font-family="IBM Plex Sans Arabic" direction="ltr"></text>
+      <line x1="450" y1="410" x2="450" y2="410" id="wt-arr" stroke="#EC5F33" stroke-width="10" marker-end="url(#mf)"/>
+    </svg>
+  </div>
+</section>
+
+<!-- ===================== 10. WORKED EXAMPLE ===================== -->
+<section class="slide" data-title="مثال محلول">
+  <span class="kicker o"><svg class="ic"><use href="#i-book"/></svg>مثال محلول</span>
+  <h2 style="font-size:46px;line-height:1.5">تدفع ريم صندوقًا كتلته <bdi class="eq">6 kg</bdi> بقوة <bdi class="eq">42 N</bdi>، وتؤثر فيه قوة احتكاك <bdi class="eq">12 N</bdi>. احسبي تسارع الصندوق.</h2>
+  <div class="row" style="margin-top:20px;align-items:flex-start;gap:40px">
+    <div style="flex:1" class="steps" id="ex-steps">
+      <div class="step"><b>المعطيات</b><span><bdi class="eq">m = 6 kg ، F = 42 N ، f = 12 N</bdi></span></div>
+      <div class="step"><b>المطلوب</b><span>التسارع <bdi class="eq">a = ?</bdi></span></div>
+      <div class="step"><b>القوة المحصلة</b><bdi class="eq">ΣF = F − f = 42 − 12 = 30 N</bdi></div>
+      <div class="step"><b>القانون</b><bdi class="eq">a = ΣF / m</bdi></div>
+      <div class="step" style="border-color:var(--ok)"><b>الناتج</b><bdi class="eq" style="color:var(--ok);font-size:36px">a = 30 / 6 = 5 m/s²</bdi></div>
+      <div class="row" style="gap:14px;margin-top:6px"><button class="btn o" id="ex-next"><svg class="ic"><use href="#i-next"/></svg>الخطوة التالية</button><button class="btn ghost" id="ex-reset"><svg class="ic"><use href="#i-reset"/></svg></button></div>
+    </div>
+    <div class="card try" style="width:640px;padding:34px;display:flex;flex-direction:column;gap:18px">
+      <span class="kicker f" style="align-self:flex-start"><svg class="ic"><use href="#i-pencil"/></svg>جرّبي بنفسك</span>
+      <svg viewBox="0 0 560 170" width="560" height="170">
+        <path d="M20 150h520" stroke="#1B2340" stroke-width="4"/>
+        <rect x="210" y="60" width="130" height="90" rx="12" fill="#F3C969" stroke="#1B2340" stroke-width="5"/>
+        <text x="275" y="115" text-anchor="middle" font-size="28" font-weight="700" fill="#1B2340" font-family="IBM Plex Sans Arabic">9 kg</text>
+        <line x1="60" y1="100" x2="195" y2="100" stroke="#EC5F33" stroke-width="9" marker-end="url(#mf)"/><text x="120" y="80" text-anchor="middle" font-size="26" font-weight="700" fill="#EC5F33" font-family="IBM Plex Sans Arabic">54 N</text>
+        <line x1="500" y1="135" x2="355" y2="135" stroke="#2B67E5" stroke-width="7" marker-end="url(#mm)"/><text x="430" y="120" text-anchor="middle" font-size="24" font-weight="700" fill="#2B67E5" font-family="IBM Plex Sans Arabic">18 N</text>
+      </svg>
+      <div style="font-size:27px;line-height:1.6">ما تسارع الصندوق؟</div>
+      <div class="row" style="gap:14px;align-items:center"><input id="ex-in" type="text" inputmode="decimal" placeholder="?"><bdi class="eq" style="font-size:28px">m/s²</bdi><button class="btn m" id="ex-chk">تحقّقي</button></div>
+      <div class="toast" id="ex-msg"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 11. CLASSIFY ===================== -->
+<section class="slide" data-title="تصنيف المواقف">
+  <span class="kicker f"><svg class="ic"><use href="#i-team"/></svg>نشاط تعاوني · صنّفي الموقف</span>
+  <h2 style="font-size:52px">اسحبي كل موقف إلى القانون الذي يفسّره <span style="font-size:28px;color:var(--muted);font-weight:500">(أو اضغطي الموقف ثم العمود)</span></h2>
+  <div class="pool" id="cl-pool"></div>
+  <div class="zones">
+    <div class="zone" data-z="1" style="background:var(--soft-o)"><h3 style="color:var(--ok)"><svg class="ic"><use href="#i-belt"/></svg>القانون الأول</h3></div>
+    <div class="zone" data-z="2" style="background:var(--soft-m)"><h3 style="color:var(--motion)"><svg class="ic"><use href="#i-mass"/></svg>القانون الثاني</h3></div>
+    <div class="zone" data-z="3" style="background:var(--soft-g)"><h3 style="color:#B07405"><svg class="ic"><use href="#i-swap"/></svg>القانون الثالث</h3></div>
+  </div>
+  <div class="row" style="margin-top:22px;align-items:center;gap:20px"><button class="btn o" id="cl-chk"><svg class="ic"><use href="#i-check"/></svg>تحقّقي</button><button class="btn ghost" id="cl-reset"><svg class="ic"><use href="#i-reset"/></svg>إعادة</button><span class="toast" id="cl-msg"></span></div>
+</section>
+
+<!-- ===================== 12. QUIZ ===================== -->
+<section class="slide" data-title="التقويم">
+  <span class="kicker"><svg class="ic"><use href="#i-check"/></svg>التقويم البنائي</span>
+  <h2>اختبري فهمكِ</h2>
+  <div class="quiz">
+    <div class="card qbox">
+      <div class="qn" id="qz-n"></div>
+      <div class="qt" id="qz-q"></div>
+      <div class="opts" id="qz-o"></div>
+      <div class="fb" id="qz-fb"></div>
+      <button class="btn m" id="qz-next" style="display:none">السؤال التالي<svg class="ic"><use href="#i-next"/></svg></button>
+    </div>
+    <div class="card score">
+      <svg class="ic" style="width:90px;height:90px;color:var(--gold)"><use href="#i-star"/></svg>
+      <div class="big" id="qz-s">0</div>
+      <div style="font-size:26px;color:var(--muted);font-weight:600">إجابات صحيحة من <bdi>5</bdi></div>
+      <div class="dots" id="qz-d"></div>
+      <button class="btn ghost" id="qz-r" style="margin-top:16px"><svg class="ic"><use href="#i-reset"/></svg>من جديد</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 13. REAL LIFE ===================== -->
+<section class="slide" data-title="الفيزياء في حياتنا">
+  <span class="kicker o"><svg class="ic"><use href="#i-eye"/></svg>الفيزياء في حياتنا</span>
+  <h2>قوانين نيوتن حولنا في كل مكان</h2>
+  <div class="life">
+    <div class="card"><div class="ico" style="background:var(--soft-o);color:var(--ok)"><svg class="ic"><use href="#i-belt"/></svg></div><span class="tag" style="background:var(--soft-o);color:var(--ok)">القانون الأول</span><h3>حزام الأمان</h3><p>عند التوقف المفاجئ يستمر جسم الراكب في الحركة للأمام، فيوفّر الحزام القوة التي توقفه بأمان.</p></div>
+    <div class="card"><div class="ico" style="background:var(--soft-g);color:#B07405"><svg class="ic"><use href="#i-rocket"/></svg></div><span class="tag" style="background:var(--soft-g);color:#B07405">القانون الثالث</span><h3>الصواريخ وطموح الفضاء</h3><p>يدفع الصاروخ الغازات للأسفل فتدفعه للأعلى. وبهذا المبدأ انطلق رائدا الفضاء السعوديان ريانة برناوي وعلي القرني عام ٢٠٢٣ ضمن مستهدفات رؤية ٢٠٣٠.</p></div>
+    <div class="card"><div class="ico" style="background:var(--soft-m);color:var(--motion)"><svg class="ic"><use href="#i-ball"/></svg></div><span class="tag" style="background:var(--soft-m);color:var(--motion)">القانون الثاني</span><h3>ركلة الكرة</h3><p>كلما زادت قوة الركلة زاد تسارع الكرة. وترتدّ القدم قليلًا لأن الكرة تؤثر فيها بقوة رد الفعل.</p></div>
+    <div class="card"><div class="ico" style="background:var(--soft-f);color:var(--force)"><svg class="ic"><use href="#i-cart"/></svg></div><span class="tag" style="background:var(--soft-m);color:var(--motion)">القانون الثاني</span><h3>عربة التسوق</h3><p>العربة الممتلئة كتلتها أكبر، فتحتاج إلى قوة أكبر لإكسابها التسارع نفسه الذي تكتسبه العربة الفارغة.</p></div>
+  </div>
+</section>
+
+<!-- ===================== 14. SUMMARY ===================== -->
+<section class="slide" data-title="الخلاصة">
+  <span class="kicker f"><svg class="ic"><use href="#i-concept"/></svg>خلاصة الدرس</span>
+  <h2>ثلاثة قوانين تفسّر الحركة</h2>
+  <div class="sum">
+    <div class="card" style="border-top-color:var(--ok)"><h3 style="color:var(--ok)">الأول · القصور</h3><p>الجسم يحافظ على حالته الحركية ما لم تؤثر فيه قوة محصلة.</p><span class="eqb">إذا كانت <bdi class="eq">ΣF = 0</bdi> فالسرعة ثابتة</span></div>
+    <div class="card" style="border-top-color:var(--motion)"><h3 style="color:var(--motion)">الثاني · التسارع</h3><p>القوة المحصلة تُكسب الجسم تسارعًا يتناسب طرديًا معها وعكسيًا مع الكتلة.</p><span class="eqb"><bdi class="eq">ΣF = ma</bdi></span></div>
+    <div class="card" style="border-top-color:var(--gold)"><h3 style="color:#B07405">الثالث · التفاعل</h3><p>القوى تأتي أزواجًا متساوية مقدارًا متعاكسة اتجاهًا، تؤثر في جسمين مختلفين.</p><span class="eqb"><bdi class="eq">F<sub>A→B</sub> = −F<sub>B→A</sub></bdi></span></div>
+  </div>
+  <div class="hw">
+    <div class="card"><svg class="ic" style="color:var(--force)"><use href="#i-pencil"/></svg><div><b>مهمة منزلية:</b> صوّري أو ارسمي ثلاثة مواقف من منزلك، يوضح كل منها قانونًا من قوانين نيوتن، واكتبي تفسيرًا علميًا مختصرًا لكل موقف.</div></div>
+    <div class="card"><svg class="ic" style="color:var(--motion)"><use href="#i-q"/></svg><div><b>بطاقة الخروج:</b> لماذا يصعب إيقاف شاحنة محمّلة مقارنة بسيارة صغيرة تسير بالسرعة نفسها؟</div></div>
+  </div>
+</section>
+
+<!-- ===================== 15. CLOSING ===================== -->
+<section class="slide" data-title="الختام">
+  <div style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:20px">
+    <svg viewBox="0 0 300 220" width="420" height="300">
+      <circle cx="150" cy="110" r="100" fill="#FDE8DF"/>
+      <g transform="translate(150 105) scale(2.2)" fill="#EC5F33" stroke="#1B2340" stroke-width="2.4" stroke-linejoin="round"><path d="M0 -14c-7-5-20-3-21.5 10C-23 10-13 26-6 26c3 0 4-1.7 6-1.7S3 26 6 26c7 0 17-16 15.5-30C20-17 7-19 0-14z"/><path d="M0 -14c0-6 2.5-11 6.5-13.5" fill="none"/></g>
+      <path d="M40 60l14 8M260 60l-14 8M30 140h16M254 140h16" stroke="#1B2340" stroke-width="4" stroke-linecap="round" opacity=".4"/>
+    </svg>
+    <h1 style="font-size:110px">شكرًا لكُنّ</h1>
+    <p class="lead" style="font-size:34px">«القوة لا تُبقي الأجسام متحركة… بل تُغيّر حركتها»</p>
+    <span class="kicker"><svg class="ic"><use href="#i-q"/></svg>هل لديكِ سؤال؟</span>
+  </div>
+</section>
+
+<!-- toolbar -->
+<div class="timer-big" id="tm-big">00:00</div>
+<div class="timer-pop" id="tm-pop"><button data-t="30">٣٠ ث</button><button data-t="60">١ د</button><button data-t="120">٢ د</button><button data-t="180">٣ د</button><button data-t="300">٥ د</button><button data-t="0" style="color:var(--bad)">إيقاف</button></div>
+<div class="bar">
+  <div class="brand"><svg class="ic"><use href="#i-apple"/></svg><span id="bar-t">قوانين نيوتن في الحركة</span></div>
+  <div class="nav">
+    <button id="b-tm" title="مؤقت النشاط"><svg class="ic"><use href="#i-timer"/></svg></button>
+    <button id="b-fs" title="ملء الشاشة"><svg class="ic"><use href="#i-full"/></svg></button>
+    <button id="b-prev" title="السابق"><svg class="ic"><use href="#i-prev"/></svg></button>
+    <span class="count" id="cnt"></span>
+    <button id="b-next" title="التالي"><svg class="ic"><use href="#i-next"/></svg></button>
+  </div>
+</div>
+<div class="progress" id="prog"></div>
+</div>
+
+<script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const NS='http://www.w3.org/2000/svg';
+function el(tag,attrs,parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e}
+const fmt=(n,d=1)=>(Math.round(n*10**d)/10**d).toFixed(d);
+
+/* ---------- stage scaling & navigation ---------- */
+const stage=$('#stage');
+function fit(){const s=Math.min(innerWidth/1920,innerHeight/1080);stage.style.transform=`translate(-50%,-50%) scale(${s})`}
+addEventListener('resize',fit);fit();
+const slides=$$('.slide');let cur=0;
+function go(i){i=Math.max(0,Math.min(slides.length-1,i));slides[cur].classList.remove('active');cur=i;slides[cur].classList.add('active');
+  $('#cnt').textContent=`${cur+1} / ${slides.length}`;$('#prog').style.width=((cur+1)/slides.length*100)+'%';
+  $('#bar-t').textContent=cur?slides[cur].dataset.title+' · قوانين نيوتن':'قوانين نيوتن في الحركة';
+  try{history.replaceState(null,'','#'+(cur+1))}catch(e){}}
+$('#b-next').onclick=()=>go(cur+1);$('#b-prev').onclick=()=>go(cur-1);
+addEventListener('keydown',e=>{const t=e.target;if(t.isContentEditable||t.tagName==='INPUT'&&t.type!=='range'&&t.type!=='checkbox')return;
+  if(t.type==='range'&&(e.key==='ArrowLeft'||e.key==='ArrowRight'))return;
+  if(['ArrowLeft','PageDown',' '].includes(e.key)){e.preventDefault();go(cur+1)}
+  else if(['ArrowRight','PageUp'].includes(e.key)){e.preventDefault();go(cur-1)}
+  else if(e.key==='Home')go(0);else if(e.key==='End')go(slides.length-1);else if(e.key==='f'||e.key==='F')toggleFS()});
+function toggleFS(){try{if(!document.fullscreenElement)document.documentElement.requestFullscreen?.()?.catch(()=>{});else document.exitFullscreen?.()?.catch(()=>{})}catch(e){}}
+$('#b-fs').onclick=toggleFS;
+go(Math.max(0,(parseInt(location.hash.slice(1))||1)-1));
+
+/* ---------- timer ---------- */
+let tmLeft=0,tmInt=null;
+$('#b-tm').onclick=()=>$('#tm-pop').classList.toggle('show');
+$$('#tm-pop button').forEach(b=>b.onclick=()=>{clearInterval(tmInt);const big=$('#tm-big');$('#tm-pop').classList.remove('show');big.classList.remove('end');
+  tmLeft=+b.dataset.t;if(!tmLeft){big.classList.remove('show');return}big.classList.add('show');
+  const draw=()=>big.textContent=String(Math.floor(tmLeft/60)).padStart(2,'0')+':'+String(tmLeft%60).padStart(2,'0');draw();
+  tmInt=setInterval(()=>{tmLeft--;draw();if(tmLeft<=0){clearInterval(tmInt);big.classList.add('end');big.textContent='انتهى الوقت';setTimeout(()=>big.classList.remove('show','end'),6000)}},1000)});
+
+/* ---------- 3. warm-up car ---------- */
+(()=>{const dash=$('#w-dash');for(let i=0;i<14;i++)el('rect',{x:i*90,y:485,width:50,height:10,rx:5,fill:'#fff',opacity:.8},dash);
+  let speed=0,target=0,off=0,braking=false,last=0;const pass=$('#w-pass'),st=$('#w-state');
+  function loop(ts){const dt=Math.min(.05,(ts-(last||ts))/1000);last=ts;
+    if(braking){speed=Math.max(0,speed-2600*dt);if(speed===0){braking=false;setTimeout(()=>pass.style.transform='',650)}}
+    else speed+= (target-speed)*Math.min(1,dt*2);
+    off=(off+speed*dt)%90;dash.setAttribute('transform',`translate(${-off} 0)`);
+    $('#w-car').setAttribute('transform',`translate(300 ${170+(speed>5?Math.sin(ts/60)*1.5:0)})`);
+    requestAnimationFrame(loop)}
+  requestAnimationFrame(loop);
+  $('#w-go').onclick=()=>{target=900;braking=false;pass.style.transform='';$('#w-arrow').setAttribute('opacity',0);st.textContent='السيارة والراكبة تتحركان معًا'};
+  $('#w-stop').onclick=()=>{if(speed<100)return;braking=true;target=0;const belt=$('#w-belt').checked;
+    pass.style.transform=belt?'rotate(8deg)':'rotate(28deg) translateX(30px)';$('#w-arrow').setAttribute('opacity',1);
+    st.textContent=belt?'الحزام أوقف الراكبة بأمان':'الراكبة اندفعت للأمام!'};
+  $('#w-belt').onchange=e=>$('#w-beltl').setAttribute('opacity',e.target.checked?1:0);
+  $('#w-rev').onclick=()=>$('#w-ans').classList.toggle('on');
+})();
+
+/* ---------- 4. flips ---------- */
+$$('.flip').forEach(f=>f.onclick=()=>f.classList.toggle('on'));
+
+/* ---------- 5. net force ---------- */
+(()=>{const s={R:30,L:20,m:10,x:0,v:0,run:false},S=20,K=4.2;let last=0;
+  function draw(){const cx=520+s.x*S,net=s.R-s.L;
+    $('#nf-box').setAttribute('transform',`translate(${cx} 0)`);
+    const r=$('#nf-ropeR'),l=$('#nf-ropeL');r.setAttribute('x1',cx+70);r.setAttribute('x2',960);l.setAttribute('x1',80);l.setAttribute('x2',cx-70);
+    const aR=$('#nf-aR'),aL=$('#nf-aL');aR.setAttribute('x1',cx+10);aR.setAttribute('x2',cx+10+s.R*K);aR.style.display=s.R?'':'none';
+    aL.setAttribute('x1',cx-10);aL.setAttribute('x2',cx-10-s.L*K);aL.style.display=s.L?'':'none';
+    const tR=$('#nf-tR'),tL=$('#nf-tL');tR.setAttribute('x',cx+10+s.R*K/2);tR.textContent=s.R?s.R+' N':'';tL.setAttribute('x',cx-10-s.L*K/2);tL.textContent=s.L?s.L+' N':'';
+    const aN=$('#nf-aN'),tN=$('#nf-tN');aN.style.display=net?'':'none';aN.setAttribute('x1',cx);aN.setAttribute('x2',cx+net*K);
+    tN.setAttribute('x',cx+net*K/2);tN.textContent=net?'ΣF = '+Math.abs(net)+' N':'ΣF = 0';if(!net)tN.setAttribute('x',cx);
+    $('#nf-r').textContent=s.R+' N';$('#nf-l').textContent=s.L+' N';
+    $('#nf-net').innerHTML=`<bdi class="eq">${Math.abs(net)} N</bdi> <small style="display:inline">${net>0?'نحو اليمين':net<0?'نحو اليسار':''}</small>`;
+    const stE=$('#nf-st');if(net===0){stE.textContent=Math.abs(s.v)>.01?'متزنة · سرعة ثابتة':'متزنة · سكون';stE.style.color='var(--ok)'}else{stE.textContent='غير متزنة · تسارع';stE.style.color='var(--force)'}
+    $('#nf-v').textContent=`السرعة: ${fmt(Math.abs(s.v))} m/s`;}
+  function loop(ts){if(!s.run)return;const dt=Math.min(.05,(ts-(last||ts))/1000);last=ts;
+    s.v+=(s.R-s.L)/s.m*dt;s.x+=s.v*dt;const lim=(960-80-140-120)/2/S;
+    if(Math.abs(s.x)>lim){s.x=Math.sign(s.x)*lim;s.v=0;s.run=false}
+    draw();if(s.run)requestAnimationFrame(loop)}
+  $$('[data-nf]').forEach(b=>b.onclick=()=>{const[k,d]=b.dataset.nf.split(',');const key=k==='r'?'R':'L';s[key]=Math.max(0,Math.min(80,s[key]+ +d));draw()});
+  $('#nf-go').onclick=()=>{if(s.run)return;s.run=true;last=0;requestAnimationFrame(loop)};
+  $('#nf-reset').onclick=()=>{s.run=false;s.x=0;s.v=0;draw()};draw();
+})();
+
+/* ---------- 6. first law ---------- */
+(()=>{const surfs=[{n:'سجاد',mu:.35,c:'#D9B48F',p:'#B98E62'},{n:'خشب',mu:.15,c:'#E8C28E',p:'#C99A5C'},{n:'جليد',mu:.03,c:'#D6ECFA',p:'#fff'},{n:'بلا احتكاك',mu:0,c:'#ECEAF6',p:'#C9C3E6'}];
+  let si=1;const S=30,X0=100,XE=950,s={x:0,v:0,d:0,run:false,t:0,dotT:0,lap:0};let last=0;
+  const box=$('#l1-surf');surfs.forEach((o,i)=>{const b=document.createElement('button');b.className='btn ghost';b.textContent=o.n;b.style.padding='12px 22px';b.onclick=()=>{si=i;paint();reset()};box.appendChild(b)});
+  function paint(){const o=surfs[si];$('#l1-track').setAttribute('fill',o.c);$('#l1-name').textContent='السطح: '+o.n+(o.mu?` (μ = ${o.mu})`:' (μ = 0)');
+    const tex=$('#l1-tex');tex.innerHTML='';for(let i=0;i<40;i++)el('path',{d:`M${60+i*24} ${265+(i%3)*22}l10 ${si===2?0:6}`,stroke:o.p,'stroke-width':4,'stroke-linecap':'round',opacity:.8},tex);
+    [...box.children].forEach((b,i)=>{b.style.borderColor=i===si?'var(--ink)':'';b.style.background=i===si?'var(--ink)':'';b.style.color=i===si?'#fff':''})}
+  function draw(){const px=X0+s.x*S;$('#l1-puck').setAttribute('transform',`translate(${px} 0)`);
+    $('#l1-v').textContent=fmt(s.v);$('#l1-d').textContent=fmt(s.d);
+    const mu=surfs[si].mu,show=s.run&&mu>0&&s.v>0,fr=$('#l1-fr'),ft=$('#l1-frt');fr.setAttribute('opacity',show?1:0);ft.setAttribute('opacity',show?1:0);
+    fr.setAttribute('x1',px-10);fr.setAttribute('x2',px-10-mu*260);ft.setAttribute('x',px-10-mu*130);
+    $('#l1-lap').textContent=s.lap?`أكمل القرص ${s.lap} ${s.lap===1?'دورة':'دورات'} عبر المسار ولم يتوقف…`:''}
+  function loop(ts){if(!s.run)return;const dt=Math.min(.05,(ts-(last||ts))/1000);last=ts;const mu=surfs[si].mu;
+    if(mu>0){s.v-=mu*9.8*dt;if(s.v<=0){s.v=0;s.run=false}}
+    s.x+=s.v*dt;s.d+=s.v*dt;s.dotT+=dt;
+    if(s.dotT>=.25&&s.v>0){s.dotT=0;el('circle',{cx:X0+s.x*S,cy:360,r:7,fill:'#1B2340',opacity:.7},$('#l1-dots'))}
+    if(X0+s.x*S>XE){s.x=0;s.lap++;$('#l1-dots').innerHTML=''}
+    draw();if(s.run)requestAnimationFrame(loop)}
+  function reset(){s.run=false;Object.assign(s,{x:0,v:0,d:0,dotT:0,lap:0});$('#l1-dots').innerHTML='';draw()}
+  $('#l1-go').onclick=()=>{reset();s.v=7;s.run=true;last=0;requestAnimationFrame(loop)};$('#l1-reset').onclick=reset;paint();draw();
+})();
+
+/* ---------- 7. second law ---------- */
+(()=>{const F=$('#l2-F'),M=$('#l2-m'),S=42,X0=110,L=20,rec=[];let s={x:0,v:0,t:0,run:false},last=0;
+  const tk=$('#l2-ticks');for(let m=0;m<=20;m+=5){el('line',{x1:X0+85+m*S,y1:220,x2:X0+85+m*S,y2:240,stroke:'#1B2340','stroke-width':3},tk);const t=el('text',{x:X0+85+m*S,y:264,'text-anchor':'middle','font-size':20,fill:'#676D86','font-family':'IBM Plex Sans Arabic'},tk);t.textContent=m+' m'}
+  function blocks(){const g=$('#l2-blocks');g.innerHTML='';const m=+M.value;for(let i=0;i<m;i++){const r=Math.floor(i/6),c=i%6;el('rect',{x:10+c*26,y:96-r*24,width:22,height:20,rx:4,fill:'#F3C969',stroke:'#1B2340','stroke-width':2.5},g)}}
+  function ui(){const f=+F.value,m=+M.value;$('#l2-Fv').textContent=f+' N';$('#l2-mv').textContent=m+' kg';$('#l2-a').textContent=fmt(f/m,2);
+    const a=$('#l2-arr');a.setAttribute('x1',-8-f*2.6);a.setAttribute('x2',-8);blocks()}
+  function draw(){$('#l2-cart').setAttribute('transform',`translate(${X0+s.x*S} 0)`)}
+  function loop(ts){if(!s.run)return;const dt=Math.min(.03,(ts-(last||ts))/1000);last=ts;const a=F.value/M.value;
+    s.v+=a*dt;s.x+=s.v*dt;s.t+=dt;if(s.x>=L){s.x=L;s.run=false;$('#l2-t').textContent=fmt(Math.sqrt(2*L/a),2)}else $('#l2-t').textContent=fmt(s.t,2);
+    draw();if(s.run)requestAnimationFrame(loop)}
+  F.oninput=M.oninput=()=>{ui();if(!s.run){s.x=0;draw();$('#l2-t').textContent='—'}};
+  $('#l2-go').onclick=()=>{s={x:0,v:0,t:0,run:true};last=0;requestAnimationFrame(loop)};
+  function chart(){const c=$('#l2-chart');c.innerHTML='';const W=440,H=250,l=60,b=200,r=420,t=24;const ymax=Math.max(10,...rec.map(o=>o.a))*1.15;
+    el('path',{d:`M${l} ${t}V${b}H${r}`,stroke:'#1B2340','stroke-width':3,fill:'none'},c);
+    const tx=(x,y,s,a='middle')=>{const e=el('text',{x,y,'text-anchor':a,'font-size':18,fill:'#676D86','font-family':'IBM Plex Sans Arabic'},c);e.textContent=s};
+    tx((l+r)/2,236,'القوة F (N)');tx(l-8,t+6,fmt(ymax,0),'end');tx(l-8,b+6,'0','end');tx(r,b+22,'60');
+    const yl=el('text',{x:20,y:(t+b)/2,'text-anchor':'middle','font-size':18,fill:'#676D86','font-family':'IBM Plex Sans Arabic',transform:`rotate(-90 20 ${(t+b)/2})`},c);yl.textContent='التسارع a';
+    const cols={};const pal=['#2B67E5','#EC5F33','#13A07C','#7A4FD0','#E39A12','#D6384B'];let ci=0;
+    rec.forEach(o=>{if(!(o.m in cols))cols[o.m]=pal[ci++%pal.length];el('circle',{cx:l+o.F/60*(r-l),cy:b-o.a/ymax*(b-t),r:9,fill:cols[o.m],stroke:'#fff','stroke-width':2},c)})}
+  function table(){const tb=$('#l2-tb');if(!rec.length){tb.innerHTML='<tr><td colspan="4" style="color:var(--muted)">سجّلي نتائج تجاربك هنا</td></tr>';return}
+    tb.innerHTML=rec.slice(-5).map((o,i)=>`<tr><td>${rec.length-Math.min(5,rec.length)+i+1}</td><td>${o.F}</td><td>${o.m}</td><td><b>${fmt(o.a,2)}</b></td></tr>`).join('')}
+  $('#l2-rec').onclick=()=>{rec.push({F:+F.value,m:+M.value,a:F.value/M.value});table();chart()};
+  $('#l2-clr').onclick=()=>{rec.length=0;table();chart()};
+  ui();draw();chart();
+})();
+
+/* ---------- 8. third law ---------- */
+(()=>{const M1=$('#l3-m1'),M2=$('#l3-m2'),F=150,PT=.8,S=60,C=520;let s,last=0;
+  function skater(g,col,flip){g.innerHTML='';const k=el('g',{},g);
+    el('ellipse',{cx:0,cy:360,rx:46,ry:8,fill:'#1B2340',opacity:.15},k);
+    el('path',{d:'M-22 352h44',stroke:'#1B2340','stroke-width':6,'stroke-linecap':'round'},k);
+    el('path',{d:'M-8 350l4-70M8 350l-2-70',stroke:'#1B2340','stroke-width':12,'stroke-linecap':'round'},k);
+    el('rect',{x:-30,y:190,width:60,height:100,rx:26,fill:col,stroke:'#1B2340','stroke-width':5},k);
+    el('circle',{cx:0,cy:160,r:28,fill:'#F5C9A8',stroke:'#1B2340','stroke-width':5},k);
+    el('path',{d:'M-27 152c2-26 52-30 55 0-10-8-35-10-55 0z',fill:'#1B2340'},k);
+    el('path',{d:`M${flip?-20:20} 215l${flip?-40:40} 12`,stroke:'#1B2340','stroke-width':12,'stroke-linecap':'round'},k);
+    return k}
+  const g1=$('#l3-s1'),g2=$('#l3-s2');let k1,k2;
+  function build(){k1=skater(g1,'#2B67E5',false);k2=skater(g2,'#EC5F33',true)}
+  function reset(){s={x1:-.75,x2:.75,v1:0,v2:0,t:0,run:false};$('#l3-arrows').setAttribute('opacity',0);$('#l3-a1').textContent='—';$('#l3-a2').textContent='—';ui();draw()}
+  function ui(){const m1=+M1.value,m2=+M2.value;$('#l3-m1v').textContent=m1+' kg';$('#l3-m2v').textContent=m2+' kg';
+    k1&&k1.setAttribute('transform',`translate(0 360) scale(${.7+m1/200}) translate(0 -360)`);k2&&k2.setAttribute('transform',`translate(0 360) scale(${.7+m2/200}) translate(0 -360)`)}
+  function draw(){const p1=C+s.x1*S,p2=C+s.x2*S;g1.setAttribute('transform',`translate(${p1} 0)`);g2.setAttribute('transform',`translate(${p2} 0)`);
+    const L=F*.7;const f1=$('#l3-f1'),f2=$('#l3-f2');f1.setAttribute('x1',p1-20);f1.setAttribute('x2',p1-20-L);f2.setAttribute('x1',p2+20);f2.setAttribute('x2',p2+20+L);
+    $('#l3-t1').setAttribute('x',p1-20-L/2);$('#l3-t2').setAttribute('x',p2+20+L/2)}
+  function loop(ts){if(!s.run)return;const dt=Math.min(.04,(ts-(last||ts))/1000);last=ts;const m1=+M1.value,m2=+M2.value;s.t+=dt;
+    if(s.t<PT){s.v1-=F/m1*dt;s.v2+=F/m2*dt;$('#l3-arrows').setAttribute('opacity',1)}
+    else{$('#l3-arrows').setAttribute('opacity',.35);const d=.03*9.8*dt;s.v1=Math.min(0,s.v1+d);s.v2=Math.max(0,s.v2-d)}
+    s.x1+=s.v1*dt;s.x2+=s.v2*dt;const lim=7.6;if(s.x1<-lim){s.x1=-lim;s.v1=0}if(s.x2>lim){s.x2=lim;s.v2=0}
+    if(s.t>PT&&s.v1===0&&s.v2===0)s.run=false;draw();if(s.run)requestAnimationFrame(loop)}
+  M1.oninput=M2.oninput=()=>{ui();if(!s.run)reset()};
+  $('#l3-go').onclick=()=>{reset();s.run=true;last=0;$('#l3-a1').innerHTML=`<bdi class="eq">${fmt(F/M1.value,2)}</bdi> <small style="display:inline">m/s²</small>`;$('#l3-a2').innerHTML=`<bdi class="eq">${fmt(F/M2.value,2)}</bdi> <small style="display:inline">m/s²</small>`;requestAnimationFrame(loop)};
+  $('#l3-reset').onclick=reset;build();reset();
+})();
+
+/* ---------- 9. weight ---------- */
+(()=>{const P=[{n:'الأرض',g:9.8,c:'#2B67E5',c2:'#13A07C'},{n:'القمر',g:1.62,c:'#A7A9B8',c2:'#7E8195'},{n:'المريخ',g:3.71,c:'#D9663B',c2:'#A9432A'},{n:'المشتري',g:24.79,c:'#E3A86B',c2:'#B9784A'}];let pi=0;const MAX=2500;
+  const box=$('#wt-pl');P.forEach((p,i)=>{const b=document.createElement('button');b.className='planet';
+    b.innerHTML=`<svg width="58" height="58" viewBox="0 0 58 58"><circle cx="29" cy="29" r="22" fill="${p.c}" stroke="#1B2340" stroke-width="3"/><path d="M14 22c6 2 10-2 16 0M20 36c6-3 12 2 20-1" stroke="${p.c2}" stroke-width="4" fill="none" stroke-linecap="round"/>${i===3?'<path d="M8 29h42" stroke="#B9784A" stroke-width="3"/>':''}${i===1?'<circle cx="22" cy="24" r="4" fill="#7E8195"/><circle cx="35" cy="34" r="3" fill="#7E8195"/>':''}</svg>${p.n}<small>g = ${p.g}</small>`;
+    b.onclick=()=>{pi=i;upd()};box.appendChild(b)});
+  const tk=$('#wt-ticks');for(let v=0;v<=MAX;v+=500){const a=(-180+v/MAX*180)*Math.PI/180;el('line',{x1:Math.cos(a)*64,y1:Math.sin(a)*64,x2:Math.cos(a)*92,y2:Math.sin(a)*92,stroke:'#1B2340','stroke-width':3},tk)}
+  function upd(){const m=+$('#wt-m').value,p=P[pi],W=m*p.g;$('#wt-mv').textContent=m+' kg';$('#wt-objt').textContent=m+' kg';
+    [...box.children].forEach((b,i)=>b.classList.toggle('on',i===pi));$('#wt-bg').setAttribute('fill',p.c);
+    $('#wt-calc').textContent=`W = ${m} × ${p.g} = ${fmt(W,1)} N`;$('#wt-W').textContent=`W = ${fmt(W,1)} N`;
+    $('#wt-needle').style.transform=`rotate(${-90+Math.min(W,MAX)/MAX*180}deg)`;
+    const sc=.75+m/200;$('#wt-obj').setAttribute('transform',`translate(450 400) scale(${sc}) translate(-450 -400)`);
+    const arr=$('#wt-arr');arr.setAttribute('y1',230);arr.setAttribute('y2',230+Math.min(160,20+W/MAX*400));arr.setAttribute('x1',640);arr.setAttribute('x2',640)}
+  $('#wt-m').oninput=upd;upd();
+})();
+
+/* ---------- 10. worked example ---------- */
+(()=>{const st=$$('#ex-steps .step');let n=0;const show=()=>st.forEach((e,i)=>e.classList.toggle('on',i<n));
+  $('#ex-next').onclick=()=>{if(n<st.length)n++;show()};$('#ex-reset').onclick=()=>{n=0;show();$('#ex-in').value='';$('#ex-msg').textContent=''};
+  $('#ex-chk').onclick=()=>{const raw=$('#ex-in').value.replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace('٫','.');const v=parseFloat(raw),m=$('#ex-msg');
+    if(isNaN(v)){m.textContent='اكتبي رقمًا أولًا';m.style.color='var(--muted)';return}
+    if(Math.abs(v-4)<.01){m.innerHTML='أحسنتِ! <bdi class="eq">ΣF = 54 − 18 = 36 N</bdi> ، <bdi class="eq">a = 36 / 9 = 4 m/s²</bdi>';m.style.color='var(--ok)'}
+    else if(Math.abs(v-6)<.01){m.textContent='تذكّري طرح قوة الاحتكاك أولًا لإيجاد القوة المحصلة';m.style.color='var(--gold)'}
+    else{m.textContent='حاولي مرة أخرى: احسبي القوة المحصلة ثم اقسميها على الكتلة';m.style.color='var(--bad)'}}
+})();
+
+/* ---------- 11. classify ---------- */
+(()=>{const items=[['يندفع الركاب للأمام عند توقف الحافلة فجأة',1],['يبقى الكتاب ساكنًا على الطاولة ما لم يحرّكه أحد',1],['دفع عربة التسوق الفارغة أسهل من الممتلئة',2],['الركلة الأقوى تُكسب الكرة تسارعًا أكبر',2],['تدفع السبّاحة الماء للخلف فتتقدم للأمام',3],['ينطلق الصاروخ للأعلى بدفع الغازات للأسفل',3],['سحب مفرش الطاولة بسرعة دون أن تسقط الأطباق',1],['يرتدّ البالون المنفوخ عند خروج الهواء منه',3]];
+  const pool=$('#cl-pool');let sel=null;
+  function reset(){pool.innerHTML='';$$('.zone .chip').forEach(c=>c.remove());$('#cl-msg').textContent='';
+    [...items].sort(()=>Math.random()-.5).forEach(([t,z],i)=>{const c=document.createElement('div');c.className='chip';c.textContent=t;c.dataset.z=z;c.draggable=true;c.id='ch'+i;
+      c.ondragstart=e=>{e.dataTransfer.setData('text',c.id)};c.onclick=e=>{e.stopPropagation();if(sel)sel.classList.remove('sel');sel=sel===c?null:c;sel&&sel.classList.add('sel')};pool.appendChild(c)})}
+  const drop=(zone,c)=>{c.classList.remove('sel','right','wrong');zone.appendChild(c);sel=null};
+  [...$$('.zone'),pool].forEach(z=>{z.ondragover=e=>{e.preventDefault();z.classList.add('over')};z.ondragleave=()=>z.classList.remove('over');
+    z.ondrop=e=>{e.preventDefault();z.classList.remove('over');const c=document.getElementById(e.dataTransfer.getData('text'));c&&drop(z,c)};
+    z.onclick=()=>{if(sel)drop(z,sel)}});
+  $('#cl-chk').onclick=()=>{let ok=0;const placed=$$('.zone .chip');placed.forEach(c=>{const r=c.dataset.z===c.parentElement.dataset.z;c.classList.toggle('right',r);c.classList.toggle('wrong',!r);ok+=r});
+    const m=$('#cl-msg');m.textContent=`${ok} من ${items.length} صحيحة`+(ok===items.length?' — ممتاز! 🎉':pool.children.length?' · ما زالت هناك مواقف لم تُصنَّف':'');m.style.color=ok===items.length?'var(--ok)':'var(--ink)'};
+  $('#cl-reset').onclick=reset;reset();
+})();
+
+/* ---------- 12. quiz ---------- */
+(()=>{const Q=[
+  {q:'وحدة قياس القوة في النظام الدولي هي:',o:['النيوتن N','الكيلوجرام kg','المتر/ثانية² m/s²','الجول J'],a:0,e:'النيوتن هو القوة التي تُكسب كتلة 1 kg تسارعًا مقداره 1 m/s².'},
+  {q:'إذا تضاعفت القوة المحصلة المؤثرة في جسم مع ثبات كتلته، فإن تسارعه:',o:['يقلّ إلى النصف','يتضاعف','يبقى ثابتًا','يصبح أربعة أمثاله'],a:1,e:'التسارع يتناسب طرديًا مع القوة المحصلة (a = ΣF / m).'},
+  {q:'جسم يتحرك بسرعة ثابتة في خط مستقيم، فإن القوة المحصلة المؤثرة فيه:',o:['تساوي وزنه','في اتجاه الحركة','تساوي صفرًا','عكس اتجاه الحركة'],a:2,e:'حسب القانون الأول: السرعة الثابتة تعني أن القوى متزنة والمحصلة صفر.'},
+  {q:'قوتا الفعل ورد الفعل:',o:['تؤثران في الجسم نفسه','متساويتان مقدارًا ومتعاكستان اتجاهًا وتؤثران في جسمين مختلفين','مختلفتان في المقدار','تلغي إحداهما الأخرى دائمًا'],a:1,e:'لا تلغي إحداهما الأخرى لأنهما تؤثران في جسمين مختلفين.'},
+  {q:'وزن جسم كتلته 10 kg على سطح القمر (g = 1.62 m/s²) يساوي:',o:['10 N','98 N','1.62 N','16.2 N'],a:3,e:'W = m × g = 10 × 1.62 = 16.2 N، بينما تبقى كتلته 10 kg.'}];
+  let i=0,res=[];const L='أبجد';
+  function render(){const d=$('#qz-d');d.innerHTML=Q.map((_,k)=>`<i class="${res[k]===true?'r':res[k]===false?'w':k===i?'c':''}"></i>`).join('');$('#qz-s').textContent=res.filter(Boolean).length;
+    if(i>=Q.length){$('#qz-n').textContent='انتهى التقويم';const sc=res.filter(Boolean).length;$('#qz-q').textContent=sc===5?'أداء رائع! أتقنتِ قوانين نيوتن 🌟':sc>=3?'أداء جيد، راجعي الأسئلة التي أخطأتِ فيها':'لنراجع الدرس معًا ونحاول مرة أخرى';$('#qz-o').innerHTML='';$('#qz-fb').textContent='';$('#qz-next').style.display='none';return}
+    const q=Q[i];$('#qz-n').textContent=`السؤال ${i+1} من ${Q.length}`;$('#qz-q').textContent=q.q;$('#qz-fb').textContent='';$('#qz-next').style.display='none';
+    const o=$('#qz-o');o.innerHTML='';q.o.forEach((t,k)=>{const b=document.createElement('button');b.className='opt';b.innerHTML=`<i>${L[k]}</i><span>${t}</span>`;
+      b.onclick=()=>{if(res[i]!==undefined)return;const ok=k===q.a;res[i]=ok;b.classList.add(ok?'right':'wrong');o.children[q.a].classList.add('right');
+        $('#qz-fb').innerHTML=`<b style="color:${ok?'var(--ok)':'var(--bad)'}">${ok?'إجابة صحيحة!':'إجابة غير صحيحة.'}</b> ${q.e}`;$('#qz-next').style.display='';
+        $('#qz-s').textContent=res.filter(Boolean).length;render2()};o.appendChild(b)})}
+  function render2(){$('#qz-d').innerHTML=Q.map((_,k)=>`<i class="${res[k]===true?'r':res[k]===false?'w':k===i?'c':''}"></i>`).join('')}
+  $('#qz-next').onclick=()=>{i++;render()};$('#qz-r').onclick=()=>{i=0;res=[];render()};render();
+})();
+</script>
+</body>
+</html>
